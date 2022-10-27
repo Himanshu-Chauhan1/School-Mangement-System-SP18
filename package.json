@@ -1,0 +1,37 @@
+{
+  "name": "sms",
+  "version": "1.0.0",
+  "description": "An automated project based on the School Management System Project in Node JS and PostgreSQL Database. The Node JS project below provides all of the necessary elements for 1 to 12 class students to employ in their school system like to take admission, know the class timings, to know which teacher is allocated for each the subjects etc. It offers crucial features that will allow all users to communicate in the same manner as school administrators connect with their faculty, and students interact with their records, classroom, period list, enforce value, course and generate time table. This system, as well as the web application, has a clear idea that is similar to real-life circumstances and well-implemented.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx nodemon app/index.js",
+    "down": "npx sequelize-cli db:migrate:undo",
+    "migrate": "npx sequelize-cli db:migrate"
+  },
+  "keywords": [
+    "JavaScript",
+    "Express",
+    "NodeJS",
+    "Postman",
+    "and",
+    "PostgreSQL"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Himanshu-Chauhan1/School-Mangement-System-SP18.git"
+  },
+  "author": "Himanshu Chauhan (Backend Engineer- Spark Eighteen Lifestyle Pvt. Ltd.)",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.20",
+    "pg": "^8.8.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.25.3"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.5.1"
+  }
+}
