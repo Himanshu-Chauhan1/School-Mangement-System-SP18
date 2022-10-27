@@ -4,13 +4,13 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('subjects', {
-      subjectid: {
+      id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      subjectcode: {
+      subjectCode: {
         type: Sequelize.STRING,
         allowNull: false
       },

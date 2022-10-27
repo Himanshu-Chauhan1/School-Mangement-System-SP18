@@ -1,4 +1,5 @@
 'use strict';
+
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
@@ -23,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     classShift: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
       allowNull: false,
     },
   }, {

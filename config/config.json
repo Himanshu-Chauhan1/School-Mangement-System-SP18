@@ -2,21 +2,21 @@
   "development": {
     "username": "postgres",
     "password": "12345",
-    "database": "SMS",
+    "database": "SMS-2",
     "host": "localhost",
     "dialect": "postgres"
   },
   "test": {
     "username": "postgres",
     "password": "12345",
-    "database": "SMS",
+    "database": "SMS-2",
     "host": "localhost",
     "dialect": "postgres"
   },
   "production": {
     "username": "postgres",
     "password": "12345",
-    "database": "SMS",
+    "database": "SMS-2",
     "host": "localhost",
     "dialect": "postgres"
   }

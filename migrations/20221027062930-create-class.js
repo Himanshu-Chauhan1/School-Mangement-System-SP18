@@ -4,7 +4,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('classes', {
-      classid: {
+      id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
@@ -15,6 +15,10 @@ module.exports = {
         type: Sequelize.STRING
       },
       departmentName: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      classShift: {
         allowNull: false,
         type: Sequelize.STRING
       },

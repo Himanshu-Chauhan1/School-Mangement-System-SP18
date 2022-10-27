@@ -1,19 +1,15 @@
 'use strict';
+
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class teacher extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
       // define association here
     }
   }
   teacher.init({
-    fullname: {
+    fullName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -22,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     address: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     dob: {
@@ -57,3 +53,5 @@ module.exports = (sequelize, DataTypes) => {
   });
   return teacher;
 };
+
+
