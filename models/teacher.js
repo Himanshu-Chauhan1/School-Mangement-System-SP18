@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       unique: true,
       allowNull: false,
     },
-    joiningdate: {
+    joiningDate: {
       type: DataTypes.DATE,
       allowNull: false,
     },

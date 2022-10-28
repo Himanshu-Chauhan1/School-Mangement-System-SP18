@@ -1,5 +1,6 @@
 const isvalidBirthdate = require("is-valid-birthdate")
-const validateDate = require("validate-date")
+const validateDate = require("validate-date");
+const { subject } = require("../../models/index");
 
 
 ////////////////////////// -GLOBAL- //////////////////////
@@ -17,32 +18,6 @@ const isValidRequestBody = function (requestBody) {
 //////////////// -FOR FULLNAME- ///////////////////////
 const isValidFullName = (fullName) => {
     return /^[a-zA-Z ]+$/.test(fullName);
-};
-
-//////////////// -FOR GENDER- ///////////////////////
-const isValidGender = (gender) => {
-    return /^(?:m|M|male|Male|f|F|female|Female|O|Other|other)$/m.test(gender);
-};
-
-
-//////////////// -FOR ADDRESS- ///////////////////////
-const isValidAddress = (address) => {
-    return /^[a-zA-Z0-9\s,'-]*$/m.test(address);
-};
-
-//////////////// -FOR EMAIL- ///////////////////////
-const isValidEmail = (email) => {
-    return /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(email);
-};
-
-//////////////// -FOR MOBILE- ///////////////////////
-const isValidMobile = (mobile) => {
-    return /^(\+91[\-\s]?)?[0]?(91)?[6789]\d{9}$/.test(mobile);
-};
-
-//////////////// -FOR CLASS SHIFT- ///////////////////////
-const isValidShift = (shift) => {
-    return /\b((?:1[0-2]|[1-9])[ap]m)-((?:1[0-2]|[1-9])[ap]m)$/gm.test(shift);
 };
 
 //////////////// -FOR SUBJECT CODE- ///////////////////////
@@ -66,18 +41,11 @@ const createSubjectValidation = async function (req, res, next) {
             return res.status(422).send({ status: 1002, message: "Subject Code is required" })
         }
 
-        // if (subjectCode.match(isValidSubjectCode)) {
-        //     var splitted = subjectCode.split(isValidSubjectCode);
-        //     console.log(splitted.length);
-        //     if (splitted.length > 1) {
-        //       splitted.forEach(function(value, index) {
-        //         if ((value != '') && (value != undefined))
-        //           console.log(value, index);
-        //       });
-        //     }
-        //   } else {
-        //     return res.status(422).send({ status: 1003, message: "Please enter a valid subject code" })
-        //   }
+        const isRegisteredSubjectCode = await subject.findOne({ where: { subjectCode: subjectCode } });
+
+        if (isRegisteredSubjectCode) {
+            return res.status(422).send({ status: 1008, message: "subjectCode is already registered" })
+        }
 
         if (!isValid(subjectName)) {
             return res.status(422).send({ status: 1002, message: "Subject name is required" })
@@ -87,14 +55,106 @@ const createSubjectValidation = async function (req, res, next) {
             return res.status(422).send({ status: 1003, message: "Please enter a valid subject name" })
         }
 
+        const isRegisteredSubjectName = await subject.findOne({ where: { subjectName: subjectName } });
+
+        if (isRegisteredSubjectName) {
+            return res.status(422).send({ status: 1008, message: "subjectName is already registered" })
+        }
+
         next()
 
     } catch (error) {
         console.log(error.message);
-        return res.status(422).send({ status: 1001, msg: "Something went wrong Please check back again" })
+        return res.status(422).send({ status: 1001, message: "Something went wrong Please check back again" })
     }
 }
 
+//========================================updateSubject==========================================================//
+
+const updateSubjectValidation = async function (req, res, next) {
+    try {
+
+        const subjectId = req.params.id;
+
+        if (!isValid(subjectId)) {
+            return res.status(422).send({ status: 1003, message: "SubejectId is not valid" })
+        }
+
+        const enteredSubject = await subject.findByPk(subjectId)
+
+        if (!enteredSubject) {
+            return res.status(422).send({ status: 1006, message: "Provided subjectId does not exists" })
+        }
+
+        const data = req.body
+
+        const { subjectCode, subjectName } = data
+
+        const dataObject = {};
+
+        if (!Object.keys(data).length && typeof files === 'undefined') {
+            return res.status(422).send({ status: 1002, msg: " Please provide some data to update" })
+        }
+
+        if ("subjectCode" in data) {
+            if (!isValid(subjectCode)) {
+                return res.status(422).send({ status: 1002, message: "SubjectCode is required" })
+            }
+
+            const isRegisteredSubjectCode = await subject.findOne({ where: { subjectCode: subjectCode } });
+
+            if (isRegisteredSubjectCode) {
+                return res.status(422).send({ status: 1008, message: "subjectCode is already registered please enter a new one to update" })
+            }
+
+            dataObject['subjectCode'] = subjectCode
+        }
+
+        if ("subjectName" in data) {
+            if (!isValid(subjectName)) {
+                return res.status(422).send({ status: 1002, message: "SubjectName is required" })
+            }
+
+            if (!isValidFullName(subjectName)) {
+                return res.status(422).send({ status: 1003, message: "Please enter a valid subject name" })
+            }
+
+            const isRegisteredSubjectName = await subject.findOne({ where: { subjectName: subjectName } });
+
+            if (isRegisteredSubjectName) {
+                return res.status(422).send({ status: 1008, message: "subjectName is already registered please enter a new one to update" })
+            }
+            dataObject['subjectName'] = subjectName
+        }
+
+        next()
+
+    } catch (error) {
+        return res.status(422).send({ status: 1001, message: "Something went wrong Please check back again" })
+    }
+}
+
+//========================================DeleteSubject==========================================================//
+
+const deleteSubjectValidation = async function (req, res, next) {
+    try {
+
+        let subjectId = req.params.id
+
+        if (!subjectId) {
+            return res.status(422).send({ status: 1002, message: "Please enter a subject-Id" })
+        }
+
+        next()
+    }
+    catch (err) {
+
+        return res.status(422).send({ status: 1001, message: "Something went wrong Please check back again" })
+    }
+};
+
 module.exports = {
-    createSubjectValidation
+    createSubjectValidation,
+    updateSubjectValidation,
+    deleteSubjectValidation
 }

@@ -1,5 +1,6 @@
 const isvalidBirthdate = require("is-valid-birthdate")
-const validateDate= require("validate-date")
+const validateDate = require("validate-date")
+const { teacher } = require("../../models/index")
 
 
 ////////////////////////// -GLOBAL- //////////////////////
@@ -24,12 +25,6 @@ const isValidGender = (gender) => {
     return /^(?:m|M|male|Male|f|F|female|Female|O|Other|other)$/m.test(gender);
 };
 
-
-//////////////// -FOR ADDRESS- ///////////////////////
-const isValidAddress = (address) => {
-    return /^[a-zA-Z0-9\s,'-]*$/m.test(address);
-};
-
 //////////////// -FOR EMAIL- ///////////////////////
 const isValidEmail = (email) => {
     return /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(email);
@@ -40,23 +35,13 @@ const isValidMobile = (mobile) => {
     return /^(\+91[\-\s]?)?[0]?(91)?[6789]\d{9}$/.test(mobile);
 };
 
-//////////////// -FOR CLASS SHIFT- ///////////////////////
-const isValidShift = (shift) => {
-    return /\b((?:1[0-2]|[1-9])[ap]m)-((?:1[0-2]|[1-9])[ap]m)$/gm.test(shift);
-};
-
-//////////////// -FOR SUBJECT CODE- ///////////////////////
-const isValidSubjectCode = (subjectCode) => {
-    return /([A-Z]{2,})(?:\s*)([0-9]{3,})?$/g.test(subjectCode);
-};
-
 //========================================CreateUser==========================================================//
 
 const createTeacherValidation = async function (req, res, next) {
     try {
         const data = req.body
 
-        const { fullName, gender, address, dob, email, mobile, joiningdate } = data
+        const { fullName, gender, address, dob, email, mobile, joiningDate } = data
 
         if (!isValidRequestBody(data)) {
             return res.status(422).send({ status: 1002, message: "Please Provide Details" })
@@ -82,10 +67,6 @@ const createTeacherValidation = async function (req, res, next) {
             return res.status(422).send({ status: 1002, message: "Address is Required" })
         }
 
-        if (!isValidAddress(address)) {
-            return res.status(422).send({ status: 1003, message: "Invalid Address, Please enter address in a correct format" })
-        }
-
         if (!isValid(dob)) {
             return res.status(422).send({ status: 1002, message: "Date of Birth is Required" })
         }
@@ -102,6 +83,12 @@ const createTeacherValidation = async function (req, res, next) {
             return res.status(422).send({ status: 1003, message: "Email should be a valid email address" })
         }
 
+        const isRegisteredEmail = await teacher.findOne({ where: { email: email } });
+
+        if (isRegisteredEmail) {
+            return res.status(422).send({ status: 1008, message: "Email id already registered" })
+        }
+
         if (!isValid(mobile)) {
             return res.status(422).send({ status: 1002, message: "Phone No. is required" })
         }
@@ -110,22 +97,156 @@ const createTeacherValidation = async function (req, res, next) {
             return res.status(422).send({ status: 1003, message: "Please enter a valid Phone no" })
         }
 
-        if (!isValid(joiningdate)) {
+        const isRegisteredMobile = await teacher.findOne({ where: { mobile: mobile } });
+
+        if (isRegisteredMobile) {
+            return res.status(422).send({ status: 1008, message: "Mobile number is already registered" })
+        }
+
+        if (!isValid(joiningDate)) {
             return res.status(422).send({ status: 1002, message: "Date of Joining is Required" })
         }
 
-        if (!validateDate(joiningdate)) {
+        if (!validateDate(joiningDate)) {
             return res.status(422).send({ status: 1003, message: "Invalid Joining Date or Please enter date of joining in the correct format" })
         }
-        
+
         next()
 
     } catch (error) {
         console.log(error.message);
-        return res.status(422).send({ status: 1001, msg: "Something went wrong Please check back again" })
+        return res.status(422).send({ status: 1001, message: "Something went wrong Please check back again" })
     }
 }
 
+//========================================updateTeacher==========================================================//
+
+const updateTeacherValidation = async function (req, res, next) {
+    try {
+
+        const teacherId = req.params.id;
+
+        if (!isValid(teacherId)) {
+            return res.status(422).send({ status: 1003, message: " teacherId is not valid" })
+        }
+
+        const enteredTeacher = await teacher.findByPk(teacherId)
+
+        if (!enteredTeacher) {
+            return res.status(422).send({ status: 1006, message: "Provided teacherId does not exists" })
+        }
+
+        const data = req.body
+
+        const { fullName, gender, address, dob, email, mobile, joiningDate } = data
+
+        const dataObject = {};
+
+        if (!Object.keys(data).length && typeof files === 'undefined') {
+            return res.status(422).send({ status: 1002, msg: " Please provide some data to update" })
+        }
+
+        if ("fullName" in data) {
+            if (!isValid(fullName)) {
+                return res.status(422).send({ status: 1002, message: "First name is required" })
+            }
+            dataObject['fullName'] = fullName
+        }
+
+        if ("gender" in data) {
+            if (!isValid(gender)) {
+                return res.status(422).send({ status: 1002, message: "Gender is required" })
+            }
+            dataObject['gender'] = gender
+        }
+
+        if ("address" in data) {
+            if (!isValid(address)) {
+                return res.status(422).send({ status: 1002, message: "Address is required" })
+            }
+
+            dataObject['address'] = address
+        }
+
+        if ("dob" in data) {
+            if (!isValid(dob)) {
+                return res.status(422).send({ status: 1002, message: "Date of birth is required" })
+            }
+
+            if (!isvalidBirthdate(dob)) {
+                return res.status(422).send({ status: 1003, message: "Please enter date of birth from the past Only, It cannot current year or greater from the current year" })
+            }
+
+            dataObject['dob'] = dob
+        }
+
+        if ("email" in data) {
+            if (!(/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/.test(data.email))) {
+                return res.status(422).send({ status: 1003, message: "Please provide a valid Email address" })
+            }
+
+            //    -------------------------  check email duplicacy----------------------------------
+            let emailCheck = await teacher.findOne({ where: { email: email } });
+
+            if (emailCheck) return res.status(422).send({ status: 1008, message: "EmailId already Registerd" })
+            dataObject['email'] = email
+        }
+
+        if ("mobile" in data) {
+            if (!/^(?:(?:\+|0{0,2})91(\s*|[\-])?|[0]?)?([6789]\d{2}([ -]?)\d{3}([ -]?)\d{4})$/.test(mobile)) {
+                return res.status(422).send({ status: 1003, msg: "Please provide a valid mobile number" })
+            }
+            //    -------------------------  check mobile duplicacy----------------------------------
+            let mobileCheck = await teacher.findOne({ where: { mobile: mobile } });
+
+            if (mobileCheck) {
+                return res.status(422).send({ status: 1008, message: "Phone Number already exists" })
+            }
+
+            dataObject['mobile'] = mobile
+        }
+
+
+        if ("joiningDate" in data) {
+            if (!isValid(joiningDate)) {
+                return res.status(422).send({ status: 1002, Message: "joiningDate is required" })
+            }
+
+            if (!validateDate(joiningDate)) {
+                return res.status(422).send({ status: 1003, message: "Invalid Joining Date or Please enter date of joining in the correct format" })
+            }
+
+            dataObject['joiningDate'] = joiningDate
+        }
+
+        next()
+
+    } catch (error) {
+        return res.status(422).send({ status: 1001, message: "Something went wrong Please check back again" })
+    }
+}
+
+//========================================DeleteTeacher==========================================================//
+
+const deleteTeacherValidation = async function (req, res, next) {
+    try {
+
+        let teacherId = req.params.id
+
+        if (!teacherId) {
+            return res.status(422).send({ status: 1002, message: "Please enter a teacher-Id" })
+        }
+
+        next()
+    }
+    catch (err) {
+
+        return res.status(422).send({ status: 1001, message: "Something went wrong Please check back again" })
+    }
+};
+
 module.exports = {
-    createTeacherValidation
+    createTeacherValidation,
+    updateTeacherValidation,
+    deleteTeacherValidation
 }

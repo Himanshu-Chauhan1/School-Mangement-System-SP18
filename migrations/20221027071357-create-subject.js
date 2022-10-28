@@ -12,11 +12,13 @@ module.exports = {
       },
       subjectCode: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        trim:true
       },
       subjectName: {
         type: Sequelize.STRING,
-        allowNull:false
+        allowNull: false,
+        trim:true
       },
       createdAt: {
         allowNull: false,

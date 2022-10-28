@@ -1,29 +1,22 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
-
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('classes', {
+    await queryInterface.createTable('students', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      className: {
-        allowNull: false,
-        type: Sequelize.STRING,
-        trim:true
+      firstName: {
+        type: Sequelize.STRING
       },
-      departmentName: {
-        allowNull: false,
-        type: Sequelize.STRING,
-        trim:true
+      lastName: {
+        type: Sequelize.STRING
       },
-      classShift: {
-        allowNull: false,
-        type: Sequelize.STRING,
-        trim:true
+      email: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
@@ -36,6 +29,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('classes');
+    await queryInterface.dropTable('students');
   }
 };
