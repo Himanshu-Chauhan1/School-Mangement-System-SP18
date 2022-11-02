@@ -8,9 +8,12 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
-const teacherModel = require("../models/teacher")
-const subjectModel = require("../models/subject")
+const teacherModel = require("./Teacher")
+const subjectModel = require("./Subject")
 const classModel = require("../models/class")
+const admissionModel = require("./Admission")
+const studentModel = require("./Student")
+const userModel = require("./user")
 
 let sequelize;
 if (config.use_env_variable) {
@@ -35,17 +38,24 @@ Object.keys(db).forEach(modelName => {
   }
 });
 
-const teacher = teacherModel(sequelize, Sequelize)
-const subject = subjectModel(sequelize, Sequelize)
-const classM = classModel(sequelize, Sequelize)
+const Teacher = teacherModel(sequelize, Sequelize)
+const Subject = subjectModel(sequelize, Sequelize)
+const Class = classModel(sequelize, Sequelize)
+const Admission = admissionModel(sequelize, Sequelize)
+const Student = studentModel(sequelize, Sequelize)
+const User = userModel(sequelize, Sequelize)
+
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
+
 module.exports = {
   db,
-  teacher,
-  subject,
-  classM
-
+  Teacher,
+  Subject,
+  Class,
+  Admission,
+  Student,
+  User
 };

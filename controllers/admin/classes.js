@@ -1,4 +1,5 @@
-const { classM } = require("../../models/index")
+const db = require("../../models")
+const { Class } = db
 
 
 //========================================POST /CREATE-CLASS==========================================================//
@@ -6,7 +7,7 @@ const { classM } = require("../../models/index")
 const create = async function (req, res) {
     try {
 
-        const classCreated = await classM.create(req.body)
+        const classCreated = await Class.create(req.body)
 
         res.status(201).send({ status: 1009, message: "A new Class has been created successfully", data: classCreated })
 
@@ -18,10 +19,10 @@ const create = async function (req, res) {
 
 //========================================GET/ GET-ALL-CLASSES==========================================================//
 
-const getAllClasses = async function (req, res) {
+const get = async function (req, res) {
     try {
 
-        let classData = await classM.findAll()
+        let classData = await Class.findAll()
 
         if (!classData) {
             return res.status(422).send({ status: 1006, message: "No Classes Found....." });
@@ -37,18 +38,18 @@ const getAllClasses = async function (req, res) {
 
 //========================================POST/UPDATE-A-CLASS==========================================================//
 
-const updateClassById = async function (req, res) {
+const update = async function (req, res) {
     try {
         const classId = req.params.id;
-        let dataObject=req.body
+        let dataObject = req.body
 
         const values = dataObject;
-        const condition = { where :{id: classId}}; 
+        const condition = { where: { id: classId } };
         const options = { multi: true };
 
-        const updateClass = await classM.update(values, condition, options)
+        const updateClass = await Class.update(values, condition, options)
 
-        return res.status(200).send({ status: 1010, message: "The entered class details has been Updated Succesfully", updatedData: values})
+        return res.status(200).send({ status: 1010, message: "The entered class details has been Updated Succesfully", updatedData: values })
     }
     catch (err) {
         console.log(err.message)
@@ -58,18 +59,18 @@ const updateClassById = async function (req, res) {
 
 //========================================DELETE/ DELETE-A-CLASS==========================================================//
 
-const deleteClassById = async function (req, res) {
+const destroy = async function (req, res) {
     try {
 
         let classId = req.params.id
 
-        let checkClass = await classM.findOne({ where: { id: classId } });
+        let checkClass = await Class.findOne({ where: { id: classId } });
 
         if (!checkClass) {
             return res.status(422).send({ status: 1011, message: "Class is Already Deleted" })
         }
 
-        let deleteClass = await teacher.destroy({ where: { id: teacherId } })
+        let deleteClass = await Class.destroy({ where: { id: classId } })
 
         return res.status(200).send({ status: 1010, message: 'Class has been deleted Successfully', data: deleteClass })
     }
@@ -81,7 +82,7 @@ const deleteClassById = async function (req, res) {
 
 module.exports = {
     create,
-    getAllClasses,
-    updateClassById,
-    deleteClassById
+    get,
+    update,
+    destroy
 }

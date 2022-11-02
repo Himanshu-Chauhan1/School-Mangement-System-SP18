@@ -1,6 +1,7 @@
 const isvalidBirthdate = require("is-valid-birthdate")
 const validateDate = require("validate-date")
-const { teacher } = require("../../models/index")
+const db = require("../../models")
+const { Teacher } = db
 
 
 ////////////////////////// -GLOBAL- //////////////////////
@@ -37,7 +38,7 @@ const isValidMobile = (mobile) => {
 
 //========================================CreateUser==========================================================//
 
-const createTeacherValidation = async function (req, res, next) {
+const create = async function (req, res, next) {
     try {
         const data = req.body
 
@@ -83,7 +84,7 @@ const createTeacherValidation = async function (req, res, next) {
             return res.status(422).send({ status: 1003, message: "Email should be a valid email address" })
         }
 
-        const isRegisteredEmail = await teacher.findOne({ where: { email: email } });
+        const isRegisteredEmail = await Teacher.findOne({ where: { email: email } });
 
         if (isRegisteredEmail) {
             return res.status(422).send({ status: 1008, message: "Email id already registered" })
@@ -97,7 +98,7 @@ const createTeacherValidation = async function (req, res, next) {
             return res.status(422).send({ status: 1003, message: "Please enter a valid Phone no" })
         }
 
-        const isRegisteredMobile = await teacher.findOne({ where: { mobile: mobile } });
+        const isRegisteredMobile = await Teacher.findOne({ where: { mobile: mobile } });
 
         if (isRegisteredMobile) {
             return res.status(422).send({ status: 1008, message: "Mobile number is already registered" })
@@ -107,7 +108,7 @@ const createTeacherValidation = async function (req, res, next) {
             return res.status(422).send({ status: 1002, message: "Date of Joining is Required" })
         }
 
-        if (!validateDate(joiningDate)) {
+        if (validateDate(joiningDate)) {
             return res.status(422).send({ status: 1003, message: "Invalid Joining Date or Please enter date of joining in the correct format" })
         }
 
@@ -121,7 +122,7 @@ const createTeacherValidation = async function (req, res, next) {
 
 //========================================updateTeacher==========================================================//
 
-const updateTeacherValidation = async function (req, res, next) {
+const update = async function (req, res, next) {
     try {
 
         const teacherId = req.params.id;
@@ -130,7 +131,7 @@ const updateTeacherValidation = async function (req, res, next) {
             return res.status(422).send({ status: 1003, message: " teacherId is not valid" })
         }
 
-        const enteredTeacher = await teacher.findByPk(teacherId)
+        const enteredTeacher = await Teacher.findByPk(teacherId)
 
         if (!enteredTeacher) {
             return res.status(422).send({ status: 1006, message: "Provided teacherId does not exists" })
@@ -186,7 +187,7 @@ const updateTeacherValidation = async function (req, res, next) {
             }
 
             //    -------------------------  check email duplicacy----------------------------------
-            let emailCheck = await teacher.findOne({ where: { email: email } });
+            let emailCheck = await Teacher.findOne({ where: { email: email } });
 
             if (emailCheck) return res.status(422).send({ status: 1008, message: "EmailId already Registerd" })
             dataObject['email'] = email
@@ -197,7 +198,7 @@ const updateTeacherValidation = async function (req, res, next) {
                 return res.status(422).send({ status: 1003, msg: "Please provide a valid mobile number" })
             }
             //    -------------------------  check mobile duplicacy----------------------------------
-            let mobileCheck = await teacher.findOne({ where: { mobile: mobile } });
+            let mobileCheck = await Teacher.findOne({ where: { mobile: mobile } });
 
             if (mobileCheck) {
                 return res.status(422).send({ status: 1008, message: "Phone Number already exists" })
@@ -228,7 +229,7 @@ const updateTeacherValidation = async function (req, res, next) {
 
 //========================================DeleteTeacher==========================================================//
 
-const deleteTeacherValidation = async function (req, res, next) {
+const destroy = async function (req, res, next) {
     try {
 
         let teacherId = req.params.id
@@ -246,7 +247,7 @@ const deleteTeacherValidation = async function (req, res, next) {
 };
 
 module.exports = {
-    createTeacherValidation,
-    updateTeacherValidation,
-    deleteTeacherValidation
+    create,
+    update,
+    destroy
 }

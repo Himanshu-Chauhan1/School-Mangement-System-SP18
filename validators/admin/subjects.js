@@ -1,6 +1,7 @@
 const isvalidBirthdate = require("is-valid-birthdate")
 const validateDate = require("validate-date");
-const { subject } = require("../../models/index");
+const db = require("../../models")
+const { Subject } = db
 
 
 ////////////////////////// -GLOBAL- //////////////////////
@@ -27,7 +28,7 @@ const isValidSubjectCode = (subjectCode) => {
 
 //========================================CreateSubject==========================================================//
 
-const createSubjectValidation = async function (req, res, next) {
+const create = async function (req, res, next) {
     try {
         const data = req.body
 
@@ -41,7 +42,7 @@ const createSubjectValidation = async function (req, res, next) {
             return res.status(422).send({ status: 1002, message: "Subject Code is required" })
         }
 
-        const isRegisteredSubjectCode = await subject.findOne({ where: { subjectCode: subjectCode } });
+        const isRegisteredSubjectCode = await Subject.findOne({ where: { subjectCode: subjectCode } });
 
         if (isRegisteredSubjectCode) {
             return res.status(422).send({ status: 1008, message: "subjectCode is already registered" })
@@ -55,7 +56,7 @@ const createSubjectValidation = async function (req, res, next) {
             return res.status(422).send({ status: 1003, message: "Please enter a valid subject name" })
         }
 
-        const isRegisteredSubjectName = await subject.findOne({ where: { subjectName: subjectName } });
+        const isRegisteredSubjectName = await Subject.findOne({ where: { subjectName: subjectName } });
 
         if (isRegisteredSubjectName) {
             return res.status(422).send({ status: 1008, message: "subjectName is already registered" })
@@ -71,16 +72,16 @@ const createSubjectValidation = async function (req, res, next) {
 
 //========================================updateSubject==========================================================//
 
-const updateSubjectValidation = async function (req, res, next) {
+const update = async function (req, res, next) {
     try {
 
         const subjectId = req.params.id;
 
         if (!isValid(subjectId)) {
             return res.status(422).send({ status: 1003, message: "SubejectId is not valid" })
-        }
+        } //UUID
 
-        const enteredSubject = await subject.findByPk(subjectId)
+        const enteredSubject = await Subject.findByPk(subjectId)
 
         if (!enteredSubject) {
             return res.status(422).send({ status: 1006, message: "Provided subjectId does not exists" })
@@ -101,7 +102,7 @@ const updateSubjectValidation = async function (req, res, next) {
                 return res.status(422).send({ status: 1002, message: "SubjectCode is required" })
             }
 
-            const isRegisteredSubjectCode = await subject.findOne({ where: { subjectCode: subjectCode } });
+            const isRegisteredSubjectCode = await Subject.findOne({ where: { subjectCode: subjectCode } });
 
             if (isRegisteredSubjectCode) {
                 return res.status(422).send({ status: 1008, message: "subjectCode is already registered please enter a new one to update" })
@@ -119,7 +120,7 @@ const updateSubjectValidation = async function (req, res, next) {
                 return res.status(422).send({ status: 1003, message: "Please enter a valid subject name" })
             }
 
-            const isRegisteredSubjectName = await subject.findOne({ where: { subjectName: subjectName } });
+            const isRegisteredSubjectName = await Subject.findOne({ where: { subjectName: subjectName } });
 
             if (isRegisteredSubjectName) {
                 return res.status(422).send({ status: 1008, message: "subjectName is already registered please enter a new one to update" })
@@ -136,7 +137,7 @@ const updateSubjectValidation = async function (req, res, next) {
 
 //========================================DeleteSubject==========================================================//
 
-const deleteSubjectValidation = async function (req, res, next) {
+const destroy = async function (req, res, next) {
     try {
 
         let subjectId = req.params.id
@@ -154,7 +155,7 @@ const deleteSubjectValidation = async function (req, res, next) {
 };
 
 module.exports = {
-    createSubjectValidation,
-    updateSubjectValidation,
-    deleteSubjectValidation
+    create,
+    update,
+    destroy
 }

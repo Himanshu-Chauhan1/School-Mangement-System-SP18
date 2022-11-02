@@ -3,8 +3,8 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('teachers', {
-       id: {
+    await queryInterface.createTable('students', {
+      id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
@@ -13,38 +13,66 @@ module.exports = {
       fullName: {
         type: Sequelize.STRING,
         allowNull: false,
-        trim: true,
+        trim:true
       },
       gender: {
         type: Sequelize.STRING,
         allowNull: false,
         trim:true
       },
-      address: {
+      fatherName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        trim:true
+      },
+      motherName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        trim:true
+      },
+      permanentAddress: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        trim:true
+      },
+      currentAddress: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        trim:true
+      },
+      district: {
         type: Sequelize.STRING,
         allowNull: false,
         trim:true
       },
       dob: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        trim:true
+      },
+      religion: {
         type: Sequelize.STRING,
         allowNull: false,
         trim:true
       },
-      email: {
+      year: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique:true,
         trim:true
       },
-      mobile: {
-        type: Sequelize.STRING,
+      enrollDate: {
+        type: Sequelize.DATE,
         allowNull: false,
-        unique:true,
         trim:true
       },
-      joiningDate: {
+      className: {
         type: Sequelize.STRING,
         allowNull: false,
+        trim:true
+      },
+      requestApproved: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
         trim:true
       },
       createdAt: {
@@ -58,6 +86,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('teachers');
+    await queryInterface.dropTable('students');
   }
 };

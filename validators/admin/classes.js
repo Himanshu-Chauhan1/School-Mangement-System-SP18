@@ -1,4 +1,5 @@
-const { classM } = require("../../models/index")
+const db = require("../../models")
+const { Class } = db
 
 
 ////////////////////////// -GLOBAL- //////////////////////
@@ -26,7 +27,7 @@ const isValidShift = (classShift) => {
 
 //========================================CreateClass==========================================================//
 
-const createClassValidation = async function (req, res, next) {
+const create = async function (req, res, next) {
     try {
         const data = req.body
 
@@ -40,7 +41,7 @@ const createClassValidation = async function (req, res, next) {
             return res.status(422).send({ status: 1002, message: "Class Name is required" })
         }
 
-        const isRegisteredClassName = await classM.findOne({ where: { className: className } });
+        const isRegisteredClassName = await Class.findOne({ where: { className: className } });
 
         if (isRegisteredClassName) {
             return res.status(422).send({ status: 1008, message: "className is already registered" })
@@ -72,7 +73,7 @@ const createClassValidation = async function (req, res, next) {
 
 //========================================updateClass==========================================================//
 
-const updateClassValidation = async function (req, res, next) {
+const update = async function (req, res, next) {
     try {
 
         const classId = req.params.id;
@@ -81,7 +82,7 @@ const updateClassValidation = async function (req, res, next) {
             return res.status(422).send({ status: 1003, message: "ClassId is not valid" })
         }
 
-        const enteredClass = await classM.findByPk(classId)
+        const enteredClass = await Class.findByPk(classId)
 
         if (!enteredClass) {
             return res.status(422).send({ status: 1006, message: "Provided classId does not exists" })
@@ -102,7 +103,7 @@ const updateClassValidation = async function (req, res, next) {
                 return res.status(422).send({ status: 1002, message: "className is required" })
             }
 
-            const isRegisteredClassName = await classM.findOne({ where: { className: className } });
+            const isRegisteredClassName = await Class.findOne({ where: { className: className } });
 
             if (isRegisteredClassName) {
                 return res.status(422).send({ status: 1008, message: "ClassName is already registered please enter a new one to update" })
@@ -121,7 +122,7 @@ const updateClassValidation = async function (req, res, next) {
                 return res.status(422).send({ status: 1003, message: "Please enter a valid departmentName" })
             }
 
-            const isRegisteredDepartmentName = await classM.findOne({ where: { departmentName: departmentName } });
+            const isRegisteredDepartmentName = await Class.findOne({ where: { departmentName: departmentName } });
 
             if (isRegisteredDepartmentName) {
                 return res.status(422).send({ status: 1008, message: "Entered departmentName is same please enter a new one to update" })
@@ -140,7 +141,7 @@ const updateClassValidation = async function (req, res, next) {
                 return res.status(422).send({ status: 1003, message: "Please enter class shift in a format of like 9am-5pm" })
             }
 
-            const isRegisteredClassShift = await classM.findOne({ where: { classShift: classShift } });
+            const isRegisteredClassShift = await Class.findOne({ where: { classShift: classShift } });
 
             if (isRegisteredClassShift) {
                 return res.status(422).send({ status: 1008, message: "Entered classShift is same please enter a new one to update" })
@@ -159,7 +160,7 @@ const updateClassValidation = async function (req, res, next) {
 
 //========================================DeleteClass==========================================================//
 
-const deleteClassValidation = async function (req, res, next) {
+const destroy = async function (req, res, next) {
     try {
 
         let classId = req.params.id
@@ -177,7 +178,7 @@ const deleteClassValidation = async function (req, res, next) {
 };
 
 module.exports = {
-    createClassValidation,
-    updateClassValidation,
-    deleteClassValidation
+    create,
+    update,
+    destroy
 }

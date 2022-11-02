@@ -1,4 +1,5 @@
-const { subject } = require("../../models/index")
+const db = require("../../models")
+const { Subject } = db
 
 
 //========================================POST /CREATE-SUBJECT==========================================================//
@@ -6,7 +7,7 @@ const { subject } = require("../../models/index")
 const create = async function (req, res) {
     try {
 
-        const subjectCreated = await subject.create(req.body)
+        const subjectCreated = await Subject.create(req.body)
 
         res.status(201).send({ status: 1009, message: "A new Subject has been created successfully", data: subjectCreated })
 
@@ -17,10 +18,10 @@ const create = async function (req, res) {
 
 //========================================GET/ GET-ALL-SUBJECTS==========================================================//
 
-const getAllSubjects = async function (req, res) {
+const get = async function (req, res) {
     try {
 
-        let subjectData = await subject.findAll()
+        let subjectData = await Subject.findAll()
 
         if (!subjectData) {
             return res.status(422).send({ status: 1006, message: "No Subjects Found....." });
@@ -37,18 +38,18 @@ const getAllSubjects = async function (req, res) {
 
 //========================================POST/UPDATE-A-SUBJECT==========================================================//
 
-const updateSubjectById = async function (req, res) {
+const update = async function (req, res) {
     try {
         const subjectId = req.params.id;
-        let dataObject=req.body
+        let dataObject = req.body
 
         const values = dataObject;
-        const condition = { where :{id: subjectId}}; 
+        const condition = { where: { id: subjectId } };
         const options = { multi: true };
 
-        const updateSubject = await subject.update(values, condition, options)
+        const updateSubject = await Subject.update(values, condition, options)
 
-        return res.status(200).send({ status: 1010, message: "The entered subject details has been Updated Succesfully", updatedData: values})
+        return res.status(200).send({ status: 1010, message: "The entered subject details has been Updated Succesfully", updatedData: values })
     }
     catch (err) {
         console.log(err.message)
@@ -59,12 +60,12 @@ const updateSubjectById = async function (req, res) {
 
 //========================================DELETE/ DELETE-A-SUBJECT==========================================================//
 
-const deleteSubjectById = async function (req, res) {
+const destroy = async function (req, res) {
     try {
 
         let subjectId = req.params.id
 
-        let checkSubject = await subject.findOne({ where: { id: subjectId } });
+        let checkSubject = await Subject.findOne({ where: { id: subjectId } });
 
         if (!checkSubject) {
             return res.status(422).send({ status: 1011, message: "Subject is Already Deleted" })
@@ -82,7 +83,7 @@ const deleteSubjectById = async function (req, res) {
 
 module.exports = {
     create,
-    getAllSubjects,
-    updateSubjectById,
-    deleteSubjectById
+    get,
+    update,
+    destroy
 }

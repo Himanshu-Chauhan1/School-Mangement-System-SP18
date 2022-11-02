@@ -1,4 +1,5 @@
-const { teacher } = require("../../models/index")
+const db = require("../../models")
+const { Teacher } = db
 
 
 //========================================POST /CREATE-TEACHER==========================================================//
@@ -6,7 +7,7 @@ const { teacher } = require("../../models/index")
 const create = async function (req, res) {
     try {
 
-        const teacherCreated = await teacher.create(req.body)
+        const teacherCreated = await Teacher.create(req.body)
 
         res.status(201).send({ status: 1009, message: "A new Teacher has been created successfully", data: teacherCreated })
 
@@ -17,10 +18,10 @@ const create = async function (req, res) {
 
 //========================================GET/ GET-ALL-TEACHERS==========================================================//
 
-const getAllTeacher = async function (req, res) {
+const index = async function (req, res) {
     try {
 
-        let teacherData = await teacher.findAll()
+        let teacherData = await Teacher.findAll()
 
         if (!teacherData) {
             return res.status(422).send({ status: 1006, message: "No Teachers Found....." });
@@ -34,20 +35,22 @@ const getAllTeacher = async function (req, res) {
     }
 };
 
+
+
 //========================================POST/UPDATE-A-TEACHER==========================================================//
 
-const updateTeacherById = async function (req, res) {
+const update = async function (req, res) {
     try {
         const teacherId = req.params.id;
-        let dataObject=req.body
+        let dataObject = req.body
 
         const values = dataObject;
-        const condition = { where :{id: teacherId}}; 
+        const condition = { where: { id: teacherId } };
         const options = { multi: true };
 
-        const updateTeacher = await teacher.update(values, condition, options)
+        const updateTeacher = await Teacher.update(values, condition, options)
 
-        return res.status(200).send({ status: 1010, msg: "The entered teacher details has been updated Succesfully", upadtedData: values})
+        return res.status(200).send({ status: 1010, msg: "The entered teacher details has been updated Succesfully", upadtedData: values })
     }
     catch (err) {
         console.log(err.message)
@@ -57,18 +60,18 @@ const updateTeacherById = async function (req, res) {
 
 //========================================DELETE/ DELETE-A-TEACHER==========================================================//
 
-const deleteTeacherById = async function (req, res) {
+const destroy = async function (req, res) {
     try {
 
         let teacherId = req.params.id
 
-        let checkTeacher = await teacher.findOne({ where: { id: teacherId } });
+        let checkTeacher = await Teacher.findOne({ where: { id: teacherId } });
 
         if (!checkTeacher) {
             return res.status(422).send({ status: 1011, message: "Teacher is Already Deleted" })
         }
 
-        let deleteTeacher = await teacher.destroy({ where: { id: teacherId } })
+        let deleteTeacher = await Teacher.destroy({ where: { id: teacherId } })
 
         return res.status(200).send({ status: 1010, message: 'Teacher has been deleted Successfully', data: deleteTeacher })
     }
@@ -80,7 +83,7 @@ const deleteTeacherById = async function (req, res) {
 
 module.exports = {
     create,
-    getAllTeacher,
-    updateTeacherById,
-    deleteTeacherById
+    index,
+    update,
+    destroy
 }
