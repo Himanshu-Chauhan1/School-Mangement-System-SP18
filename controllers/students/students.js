@@ -1,5 +1,5 @@
 const db = require("../../models")
-const { Student } = db
+const { Student, Admission } = db
 
 
 //========================================POST /CREATE-ADMISSION-==========================================================//
@@ -18,18 +18,24 @@ const create = async function (req, res) {
 }
 
 
-//========================================GET/GET-ALL-ADMISSION==========================================================//
+//========================================GET/GET-A-ADMISSION==========================================================//
 
-const get = async function (req, res) {
+const index = async function (req, res) {
     try {
 
-        let admissionData = await Student.findAll()
+        let studentId = req.params.id
+
+        let admissionData = await Student.findByPk(studentId)
 
         if (!admissionData) {
-            return res.status(422).send({ status: 1006, message: "No Students Found....." });
+            return res.status(422).send({ status: 1006, message: "Student-Id does not exits or Invalid....." });
         }
 
-        return res.status(200).send({ status: 1010, message: 'All Students who have requested for admission', data: admissionData })
+        let response = {
+            admissionApplicationStatus: admissionData,
+        }
+
+        return res.status(200).send({ status: 1010, message: 'Your submitted details for admission and approved status to proceed furthet', data: response })
     }
     catch (err) {
         console.log(err.message)
@@ -83,7 +89,7 @@ const destroy = async function (req, res) {
 
 module.exports = {
     create,
-    get,
+    index,
     update,
     destroy
 }

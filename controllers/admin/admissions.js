@@ -1,31 +1,47 @@
 const db = require("../../models")
-const { Admission } = db
+const { Admission, Student } = db
+
 
 
 //========================================POST /CREATE-ADMISSION==========================================================//
 
 const create = async function (req, res) {
     try {
+        const data = req.body
+
+        const { studentId } = data
 
         const admissionCreated = await Admission.create(req.body)
 
-        res.status(201).send({ status: 1009, message: "A new admission has been created successfully", data: admissionCreated })
+        const values = { requestApproved: data.isApproved }
+        const condition = { where: { id: studentId } };
+        const options = { multi: true};
+
+        const updatedStudentData = await Student.update(values, condition, options)
+
+        let response = {
+            admissionApprovedstatus: admissionCreated,
+            updatedStudentData: values
+        }
+
+        res.status(201).send({ status: 1009, message: "A new admission has been created successfully", data: response })
 
     } catch (err) {
+        console.log(err.message);
         return res.status(422).send({ status: 1001, message: "Something went wrong Please check back again" })
     }
-    
+
 }
 
 
 //========================================GET/GET-ALL-ADMISSION==========================================================//
 
-const get = async function (req, res) {
+const index = async function (req, res) {
     try {
 
-        let admissionData = await Class.findAll()
+        let admissionData = await Admission.findAll()
 
-        if (!admissionData) {
+        if (admissionData.length == 0) {
             return res.status(422).send({ status: 1006, message: "No Admissions Found....." });
         }
 
@@ -83,7 +99,7 @@ const destroy = async function (req, res) {
 
 module.exports = {
     create,
-    get,
+    index,
     update,
     destroy
 }

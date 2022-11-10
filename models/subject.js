@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   subject.init({
+    className: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     subjectCode: {
       type: DataTypes.STRING,
       allowNull: false,

@@ -49,16 +49,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    email: {
-      type: DataTypes.STRING,
-      unique: true,
-      allowNull: false,
-    },
-    mobile: {
-      type: DataTypes.STRING,
-      unique: true,
-      allowNull: false,
-    },
     year: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -73,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     requestApproved: {
       type: DataTypes.BOOLEAN,
-      defaultValue: true
+      defaultValue: false
     },
     createdAt: {
       type: DataTypes.DATE,

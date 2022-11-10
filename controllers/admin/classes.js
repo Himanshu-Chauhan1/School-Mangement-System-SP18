@@ -7,11 +7,20 @@ const { Class } = db
 const create = async function (req, res) {
     try {
 
+        let data=req.body
+
         const classCreated = await Class.create(req.body)
 
-        res.status(201).send({ status: 1009, message: "A new Class has been created successfully", data: classCreated })
+        let response={
+            className: data.className,
+            departmentName: data.departmentName,
+            classShift: data.classShift
+        }
+
+        res.status(201).send({ status: 1009, message: "A new Class has been created successfully", data: response })
 
     } catch (err) {
+        console.log(err.message);
         return res.status(422).send({ status: 1001, message: "Something went wrong Please check back again" })
     }
 }
@@ -19,12 +28,12 @@ const create = async function (req, res) {
 
 //========================================GET/ GET-ALL-CLASSES==========================================================//
 
-const get = async function (req, res) {
+const index = async function (req, res) {
     try {
 
-        let classData = await Class.findAll()
+        const classData = await Class.findAll({ attributes: ['className','departmentName','classShift'] })
 
-        if (!classData) {
+        if (classData.length == 0) {
             return res.status(422).send({ status: 1006, message: "No Classes Found....." });
         }
 
@@ -82,7 +91,7 @@ const destroy = async function (req, res) {
 
 module.exports = {
     create,
-    get,
+    index,
     update,
     destroy
 }

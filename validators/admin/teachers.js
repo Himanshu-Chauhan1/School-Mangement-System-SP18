@@ -108,7 +108,7 @@ const create = async function (req, res, next) {
             return res.status(422).send({ status: 1002, message: "Date of Joining is Required" })
         }
 
-        if (validateDate(joiningDate)) {
+        if (!validateDate(joiningDate)) {
             return res.status(422).send({ status: 1003, message: "Invalid Joining Date or Please enter date of joining in the correct format" })
         }
 
@@ -149,7 +149,7 @@ const update = async function (req, res, next) {
 
         if ("fullName" in data) {
             if (!isValid(fullName)) {
-                return res.status(422).send({ status: 1002, message: "First name is required" })
+                return res.status(422).send({ status: 1002, message: "Full Name name is required" })
             }
             dataObject['fullName'] = fullName
         }

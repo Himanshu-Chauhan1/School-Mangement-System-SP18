@@ -1,9 +1,8 @@
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
-
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('subjects', {
+    await queryInterface.createTable('tiemtables', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,16 +12,37 @@ module.exports = {
       className: {
         type: Sequelize.STRING,
         allowNull: false,
+        trim: true
       },
-      subjectCode: {
+      day: {
         type: Sequelize.STRING,
         allowNull: false,
-        trim:true
+        trim: true,
+      },
+      classShift: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        trim: true
+      },
+      startTime: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        trim: true,
+      },
+      endTime: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        trim: true,
       },
       subjectName: {
         type: Sequelize.STRING,
         allowNull: false,
-        trim:true
+        trim: true,
+      },
+      teacherName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        trim: true,
       },
       createdAt: {
         allowNull: false,
@@ -35,6 +55,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('subjects');
+    await queryInterface.dropTable('tiemtables');
   }
 };

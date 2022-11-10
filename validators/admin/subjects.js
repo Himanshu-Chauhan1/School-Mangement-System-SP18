@@ -1,7 +1,5 @@
-const isvalidBirthdate = require("is-valid-birthdate")
-const validateDate = require("validate-date");
 const db = require("../../models")
-const { Subject } = db
+const { Class, Subject } = db
 
 
 ////////////////////////// -GLOBAL- //////////////////////
@@ -16,9 +14,14 @@ const isValidRequestBody = function (requestBody) {
     return Object.keys(requestBody).length > 0;
 };
 
-//////////////// -FOR FULLNAME- ///////////////////////
-const isValidFullName = (fullName) => {
-    return /^[a-zA-Z ]+$/.test(fullName);
+//////////////// -FOR SUBJECTNAME- ///////////////////////
+const isValidSubjectName = (subjectName) => {
+    return /^[a-zA-Z ]+$/.test(subjectName);
+};
+
+//////////////// -FOR CLASSNAME- ///////////////////////
+const isValidClassName = (className) => {
+    return /^(X{1,3})(I[XV]|V?I{0,3})$|^(I[XV]|V?I{1,3})$|^V$/.test(className)
 };
 
 //////////////// -FOR SUBJECT CODE- ///////////////////////
@@ -26,16 +29,31 @@ const isValidSubjectCode = (subjectCode) => {
     return /([A-Z]{2,})(?:\s*)([0-9]{3,})?$/g.test(subjectCode);
 };
 
+
 //========================================CreateSubject==========================================================//
 
 const create = async function (req, res, next) {
     try {
         const data = req.body
 
-        const { subjectCode, subjectName } = data
+        const { className, subjectCode, subjectName} = data
 
         if (!isValidRequestBody(data)) {
             return res.status(422).send({ status: 1002, message: "Please Provide Details" })
+        }
+
+        if (!isValid(className)) {
+            return res.status(422).send({ status: 1002, message: "Class Name is required" })
+        }
+
+        const isRegisteredClassName = await Class.findOne({ where: { className: className } });
+
+        if (!isRegisteredClassName) {
+            return res.status(422).send({ status: 1008, message: "className is not registered, Please enter a registered class" })
+        }
+
+        if (!isValidClassName(className)) {
+            return res.status(422).send({ status: 1003, message: "Please provide a Class Name in roman number only like I,II,III etc" })
         }
 
         if (!isValid(subjectCode)) {
@@ -45,14 +63,14 @@ const create = async function (req, res, next) {
         const isRegisteredSubjectCode = await Subject.findOne({ where: { subjectCode: subjectCode } });
 
         if (isRegisteredSubjectCode) {
-            return res.status(422).send({ status: 1008, message: "subjectCode is already registered" })
+            return res.status(422).send({ status: 1008, message: "subjectCode is already registered with another subject" })
         }
 
         if (!isValid(subjectName)) {
             return res.status(422).send({ status: 1002, message: "Subject name is required" })
         }
 
-        if (!isValidFullName(subjectName)) {
+        if (!isValidSubjectName(subjectName)) {
             return res.status(422).send({ status: 1003, message: "Please enter a valid subject name" })
         }
 

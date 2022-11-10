@@ -1,9 +1,9 @@
 'use strict';
-const { Model } = require('sequelize');
-const bcrypt = require("bcrypt");
-
+const {
+  Model
+} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
+  class tiemtable extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,36 +13,43 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  User.init({
-    
-    fullName: {
+  tiemtable.init({
+    className: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      trim: true
+    },
+    day: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      trim: true,
+    },
+    classShift: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      trim: true
+    },
+    startTime: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    email: {
+    endTime: {
       type: DataTypes.STRING,
-      unique: true,
       allowNull: false,
     },
-    mobile: {
+    subjectName: {
       type: DataTypes.STRING,
-      unique: true,
       allowNull: false,
+      trim: true,
     },
-    password: {
+    teacherName: {
       type: DataTypes.STRING,
-      set: function setPassword(val) {
-        this.setDataValue('password', bcrypt.hashSync(val, 10));
-      },
-    },
-    role: {
-      type: DataTypes.STRING,
-      defaultValue: "student"
+      allowNull: false,
+      trim: true,
     },
   }, {
     sequelize,
-    modelName: 'User',
+    modelName: 'tiemtable',
   });
-
-  return User;
+  return tiemtable;
 };

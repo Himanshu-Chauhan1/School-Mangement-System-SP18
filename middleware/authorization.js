@@ -6,38 +6,25 @@ const { User } = db
 //----------------------------------------authorization----------------------------------------------------*//
 
 const authorization = async function (req, res, next) {
-    // the payload passed as request state from the middleware 
-    if (res.locals.apiUser.role) {
-        try {
-            let user = await User.find({ role: "Admin" })
-
-            if (!user) {
-                return res.status(401).send({ status: "1003", message: "" })
-            }
-        } catch (error) {
-            console.log(error.message);
-            res.status(500).send({ status: false, message: "Server error, try again later" });
-        }
-    }
-}
-
-
-const authentication = async function (req, res, next) {
     try {
-        const token = req.header('x-auth-header');
-        if (!token) return res.status(401).send('Access Denied: No Token Provided!');
-        const decoded = jwt.verify(token, "secretkey");
-        if (role[decoded.role].find(function (url) { return url == req.baseUrl })) {
-            req.user = decoded
-            next();
+        const verifiedtoken = req.verifiedtoken
+
+        const user = await User.findByPk(verifiedtoken.id)
+        const userRole = user.role
+
+        let tokenRole = verifiedtoken.role
+
+        if (tokenRole !== userRole) {
+            return res.status(401).send({ Status: 1010, message: "Access DeniedYou dont have correct privilege to perform this operation" });
+        } else {
+            next()
         }
-        else
-            return res.status(401).send('Access Denied: You dont have correct privilege to perform this operation');
-    }
-    catch (ex) {
-        res.status(401).send('Invalid Token')
+
+    } catch (error) {
+        res.status(401).send({ status: 1010, message: "Something is wrong please check back again after sometime" });
     }
 }
 
-module.exports = authorization
+module.exports = { authorization }
+
 

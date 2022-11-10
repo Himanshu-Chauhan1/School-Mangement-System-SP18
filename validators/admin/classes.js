@@ -14,14 +14,14 @@ const isValidRequestBody = function (requestBody) {
     return Object.keys(requestBody).length > 0;
 };
 
-//////////////// -FOR FULLNAME- ///////////////////////
-const isValidFullName = (fullName) => {
-    return /^[a-zA-Z ]+$/.test(fullName);
+//////////////// -FOR CLASSNAME- ///////////////////////
+const isValidClassName = (className) => {
+    return /^(X{1,3})(I[XV]|V?I{0,3})$|^(I[XV]|V?I{1,3})$|^V$/.test(className)
 };
 
 //////////////// -FOR CLASS SHIFT- ///////////////////////
-const isValidShift = (classShift) => {
-    return /\b((?:1[0-2]|[1-9])[ap]m)-((?:1[0-2]|[1-9])[ap]m)$/gm.test(classShift);
+const isValidClassShift = (classShift) => {
+    return /\b((?:1[0-2]|[1-9])[ap]m)-((?:1[0-2]|[1-9])[ap]m)$/gm.test(classShift)
 };
 
 
@@ -47,19 +47,23 @@ const create = async function (req, res, next) {
             return res.status(422).send({ status: 1008, message: "className is already registered" })
         }
 
-        if (!isValidFullName(className)) {
-            return res.status(422).send({ status: 1003, message: "Please provide a valid Class Name" })
+        if (!isValidClassName(className)) {
+            return res.status(422).send({ status: 1003, message: "Please provide a Class Name in roman number only like I,II,III etc" })
         }
 
         if (!isValid(departmentName)) {
             return res.status(422).send({ status: 1002, message: "Department is required" })
+        }
+        
+        if (!(departmentName == 'Elementary'|| departmentName == 'Middle'|| departmentName == 'High')) {
+            return res.status(422).send({ status: 1003, message: "DepartmentName can be only Elementary, Middle and High Only" })
         }
 
         if (!isValid(classShift)) {
             return res.status(422).send({ status: 1002, message: "Class Shift is required" })
         }
 
-        if (!isValidShift(classShift)) {
+        if (!isValidClassShift(classShift)){
             return res.status(422).send({ status: 1003, message: "Please enter class shift in a format of like 9am-5pm" })
         }
 

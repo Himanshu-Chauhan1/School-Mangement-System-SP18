@@ -14,6 +14,7 @@ const classModel = require("../models/class")
 const admissionModel = require("./Admission")
 const studentModel = require("./Student")
 const userModel = require("./user")
+const timeTableModel = require("./tiemtable")
 
 let sequelize;
 if (config.use_env_variable) {
@@ -44,6 +45,7 @@ const Class = classModel(sequelize, Sequelize)
 const Admission = admissionModel(sequelize, Sequelize)
 const Student = studentModel(sequelize, Sequelize)
 const User = userModel(sequelize, Sequelize)
+const TimeTable = timeTableModel(sequelize, Sequelize)
 
 
 db.sequelize = sequelize;
@@ -57,5 +59,6 @@ module.exports = {
   Class,
   Admission,
   Student,
-  User
+  User,
+  TimeTable
 };

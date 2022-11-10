@@ -1,13 +1,15 @@
 const express = require("express")
 const studentRouter = express.Router()
 const validate = require("../../validators/students/students")
-const { create, get, update, destroy} = require("../../controllers/students/admissions")
+const { create, index, update, destroy } = require("../../controllers/students/students")
+const { authentication } = require("../../middleware/authentication")
+const { authorization } = require("../../middleware/authorization")
 
-studentRouter.post('/students', create);
-studentRouter.get('/students', get);
-studentRouter.put('/students/:id',update);
-studentRouter.delete('/students/:id', destroy);
+studentRouter.post('/students', [validate.create], create);
+studentRouter.get('/students/:id', index);
+studentRouter.put('/students/:id', [authentication, authorization], update);
+studentRouter.delete('/students/:id', [authentication, authorization], destroy);
 
 
 
-module.exports=studentRouter
+module.exports = studentRouter

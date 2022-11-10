@@ -7,27 +7,36 @@ const { Subject } = db
 const create = async function (req, res) {
     try {
 
-        const subjectCreated = await Subject.create(req.body)
+        let data=req.body
 
-        res.status(201).send({ status: 1009, message: "A new Subject has been created successfully", data: subjectCreated })
+        const subjectCreated = await Subject.create(data)
+
+        let subjectDetails = {
+                className: data.className,
+                subjectCode: data.subjectCode,
+                subjectName: data.subjectName, 
+        }
+
+        res.status(201).send({ status: 1009, message: "A new Subject has been created successfully", SubjectDetails: subjectDetails })
 
     } catch (err) {
+        console.log(err.message);
         return res.status(422).send({ status: 1001, message: "Something went wrong Please check back again" })
     }
 }
 
 //========================================GET/ GET-ALL-SUBJECTS==========================================================//
 
-const get = async function (req, res) {
+const index = async function (req, res) {
     try {
 
-        let subjectData = await Subject.findAll()
+        const subjectData = await Subject.findAll({ attributes: ['subjectCode','subjectName'] })
 
-        if (!subjectData) {
+        if (subjectData.length == 0) {
             return res.status(422).send({ status: 1006, message: "No Subjects Found....." });
         }
 
-        return res.status(200).send({ status: 1010, message: 'All Subjects', data: subjectData })
+        return res.status(200).send({ status: 1010, message: 'All Subjects including className assigned for your refrence', data: subjectData })
     }
     catch (err) {
         console.log(err.message)
@@ -71,7 +80,7 @@ const destroy = async function (req, res) {
             return res.status(422).send({ status: 1011, message: "Subject is Already Deleted" })
         }
 
-        let deleteSubject = await teacher.destroy({ where: { id: teacherId } })
+        let deleteSubject = await Subject.destroy({ where: { id: subjectId } })
 
         return res.status(200).send({ status: 1010, message: 'Subject has been deleted Successfully', data: deleteSubject })
     }
@@ -83,7 +92,7 @@ const destroy = async function (req, res) {
 
 module.exports = {
     create,
-    get,
+    index,
     update,
     destroy
 }

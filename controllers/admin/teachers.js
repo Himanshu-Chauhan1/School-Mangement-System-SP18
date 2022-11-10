@@ -7,9 +7,20 @@ const { Teacher } = db
 const create = async function (req, res) {
     try {
 
+        let data=req.body
+
         const teacherCreated = await Teacher.create(req.body)
 
-        res.status(201).send({ status: 1009, message: "A new Teacher has been created successfully", data: teacherCreated })
+        let teacher={
+            fullName: data.fullName,
+            gender: data.gender,
+            dob: data.dob,
+            email: data.email,
+            mobile: data.mobile,
+            joiningDate: data.joiningDate,
+        }
+
+        res.status(201).send({ status: 1009, message: "A new Teacher has been created successfully", data: teacher })
 
     } catch (err) {
         return res.status(422).send({ status: 1001, msg: "Something went wrong Please check back again" })
@@ -21,9 +32,9 @@ const create = async function (req, res) {
 const index = async function (req, res) {
     try {
 
-        let teacherData = await Teacher.findAll()
+        const teacherData = await Teacher.findAll({ attributes: ['fullName','gender','dob','email','mobile','joiningDate'] })
 
-        if (!teacherData) {
+        if (teacherData.length == 0) {
             return res.status(422).send({ status: 1006, message: "No Teachers Found....." });
         }
 
@@ -49,6 +60,7 @@ const update = async function (req, res) {
         const options = { multi: true };
 
         const updateTeacher = await Teacher.update(values, condition, options)
+
 
         return res.status(200).send({ status: 1010, msg: "The entered teacher details has been updated Succesfully", upadtedData: values })
     }
