@@ -131,13 +131,18 @@ const create = async function (req, res, next) {
                         [Op.gt]: newStartTime,
                     }
                 },
+                {
+                    day: {
+                        [Op.eq]: data.day,
+                    }
+                },
 
                 ]
             }
         })
 
-        if (!matchTimeSlot) {
-            return res.status(422).send({ status: 1003, message: "On this time slot there is already one Period please choose a another time slot or time" })
+        if (matchTimeSlot) {
+            return res.status(422).send({ status: 1003, message: "On this day and time slot there is already one Period please choose a another time slot or time" })
         }
 
         if (!isValid(subjectName)) {
@@ -327,12 +332,16 @@ const update = async function (req, res, next) {
                             [Op.gt]: newStartTime,
                         }
                     },
-
+                    {
+                        day: {
+                            [Op.eq]: data.day,
+                        }
+                    }
                     ]
                 }
             })
 
-            if (!matchTimeSlot) {
+            if (matchTimeSlot) {
                 return res.status(422).send({ status: 1003, message: "On this time slot there is already one Period please choose a another time slot or time" })
             }
 
@@ -395,6 +404,96 @@ const update = async function (req, res, next) {
         return res.status(422).send({ status: 1001, message: "Something went wrong Please check back again" })
     }
 }
+//========================================GET-A-CLASSTIMETABLE==========================================================//
+
+const get = async function (req, res, next) {
+    try {
+
+        if (!req.query || Object.keys(req.query).length === 0) {
+            return res.status(422).send({ status: 1008, msg: "Please provide data in query params to search by any parameters" })
+        }
+
+
+        const data = req.query
+
+        const { className, day, subjectName, teacherName } = data
+
+        if ("className" in data) {
+            if (!isValid(className)) {
+                return res.status(422).send({ status: 1002, message: "className is required" })
+            }
+
+            const isRegisteredClassName = await Class.findOne({ where: { className: className } });
+
+            if (!isRegisteredClassName) {
+                return res.status(422).send({ status: 1008, message: "ClassName is not a registered classname or Invalid ClassName" })
+            }
+
+        }
+
+
+        if ("day" in data) {
+
+            if (!isValid(day)) {
+                return res.status(422).send({ status: 1002, message: "Day is required like monday, tuesday etc" })
+            }
+
+            if (!isValidDay(day)) {
+                return res.status(422).send({ status: 1002, message: "You can only provide days from Monday to Saturday" })
+            }
+
+            const isRegisteredDayName = await TimeTable.findOne({ where: { day: day } });
+
+            if (!isRegisteredDayName) {
+                return res.status(422).send({ status: 1008, message: "There is no timetable for the entered day" })
+            }
+
+        }
+
+        if ("subjectName" in data) {
+
+            if (!isValid(subjectName)) {
+                return res.status(422).send({ status: 1002, message: "SubjectName is required" })
+            }
+
+            if (!isValidSubjectName(subjectName)) {
+                return res.status(422).send({ status: 1003, message: "Please enter a valid subject name" })
+            }
+
+            const isRegisteredSubjectName = await Subject.findOne({ where: { subjectName: subjectName } });
+
+            if (!isRegisteredSubjectName) {
+                return res.status(422).send({ status: 1008, message: "Invalid Subject or Subject is not registered" })
+            }
+
+        }
+
+
+        if ("teacherName" in data) {
+
+            if (!isValid(teacherName)) {
+                return res.status(422).send({ status: 1002, message: "teacherName is required" })
+            }
+
+            if (!isValidSubjectName(teacherName)) {
+                return res.status(422).send({ status: 1003, message: "Please enter a valid teacherName" })
+            }
+
+            const isRegisteredTeacherName = await Teacher.findOne({ where: { fullName: teacherName } });
+
+            if (!isRegisteredTeacherName) {
+                return res.status(422).send({ status: 1008, message: "Invalid Teacher or Teacher is not registered" })
+            }
+
+        }
+
+        next()
+
+    } catch (error) {
+        console.log(error.message);
+        return res.status(422).send({ status: 1001, message: "Something went wrong Please check back again" })
+    }
+}
 
 //========================================DELETE-A-CLASSTIMETABLE==========================================================//
 
@@ -418,6 +517,7 @@ const destroy = async function (req, res, next) {
 module.exports = {
     create,
     update,
+    get,
     destroy
 }
 

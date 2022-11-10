@@ -182,26 +182,28 @@ const update = async function (req, res, next) {
         }
 
         if ("email" in data) {
-            if (!(/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/.test(data.email))) {
+
+            if (!isValidEmail(email)) {
                 return res.status(422).send({ status: 1003, message: "Please provide a valid Email address" })
             }
 
-            //    -------------------------  check email duplicacy----------------------------------
             let emailCheck = await Teacher.findOne({ where: { email: email } });
 
-            if (emailCheck) return res.status(422).send({ status: 1008, message: "EmailId already Registerd" })
+            if (emailCheck) return res.status(422).send({ status: 1008, message: "EmailId is already Registerd" })
+
             dataObject['email'] = email
         }
 
         if ("mobile" in data) {
-            if (!/^(?:(?:\+|0{0,2})91(\s*|[\-])?|[0]?)?([6789]\d{2}([ -]?)\d{3}([ -]?)\d{4})$/.test(mobile)) {
+
+            if (!isValidMobile(mobile)) {
                 return res.status(422).send({ status: 1003, msg: "Please provide a valid mobile number" })
             }
-            //    -------------------------  check mobile duplicacy----------------------------------
+
             let mobileCheck = await Teacher.findOne({ where: { mobile: mobile } });
 
             if (mobileCheck) {
-                return res.status(422).send({ status: 1008, message: "Phone Number already exists" })
+                return res.status(422).send({ status: 1008, message: "Mobile Number is already exists" })
             }
 
             dataObject['mobile'] = mobile
@@ -209,6 +211,7 @@ const update = async function (req, res, next) {
 
 
         if ("joiningDate" in data) {
+
             if (!isValid(joiningDate)) {
                 return res.status(422).send({ status: 1002, Message: "joiningDate is required" })
             }

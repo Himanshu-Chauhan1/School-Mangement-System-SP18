@@ -46,8 +46,6 @@ const index = async function (req, res) {
     }
 };
 
-
-
 //========================================POST/UPDATE-A-TEACHER==========================================================//
 
 const update = async function (req, res) {

@@ -5,7 +5,7 @@ const { create, index, update, destroy } = require("../../controllers/admin/subj
 const { authentication } = require("../../middleware/authentication")
 const { authorization } = require("../../middleware/authorization")
 
-subjectRouter.post('/subjects', [validate.create], create);
+subjectRouter.post('/subjects', [authentication,authorization,validate.create], create);
 subjectRouter.get('/subjects', index);
 subjectRouter.put('/subjects/:id', [authentication, authorization, validate.update], update);
 subjectRouter.delete('/subjects/:id', [authentication, authorization, validate.destroy], destroy);

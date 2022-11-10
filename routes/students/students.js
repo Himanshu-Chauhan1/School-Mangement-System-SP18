@@ -5,7 +5,7 @@ const { create, index, update, destroy } = require("../../controllers/students/s
 const { authentication } = require("../../middleware/authentication")
 const { authorization } = require("../../middleware/authorization")
 
-studentRouter.post('/students', [validate.create], create);
+studentRouter.post('/students', [authentication,authorization,validate.create], create);
 studentRouter.get('/students/:id', index);
 studentRouter.put('/students/:id', [authentication, authorization], update);
 studentRouter.delete('/students/:id', [authentication, authorization], destroy);

@@ -1,5 +1,6 @@
 const { json } = require("sequelize")
 const db = require("../../models")
+const { Op } = require("sequelize")
 const { TimeTable } = db
 
 
@@ -35,21 +36,13 @@ const create = async function (req, res) {
 const index = async function (req, res) {
     try {
 
-
-        const classData = await TimeTable.findAll({ where: { className: ['I'] }, attributes: ['className', 'classShift'] })
-
-        const timeTableData = await TimeTable.findAll({ attributes: ['day', 'startTime', 'endTime', 'subjectName', 'teacherName'] })
+        const timeTableData = await TimeTable.findAll({ attributes: ['className','classShift','day', 'startTime', 'endTime', 'subjectName', 'teacherName'] })
 
         if (timeTableData.length == 0) {
             return res.status(422).send({ status: 1006, message: "No TimeTable Found....." });
         }
 
-        let response = {
-            ClassName: classData,
-            TimeTable: timeTableData,
-        }
-
-        return res.status(200).send({ status: 1010, message: 'All TimeTables including class:', Timetable: response })
+        return res.status(200).send({ status: 1010, message: 'All TimeTables including class:', Timetable: timeTableData })
     }
     catch (err) {
         console.log(err.message)
@@ -82,6 +75,30 @@ const update = async function (req, res) {
 
 //========================================DELETE/ DELETE-A-TEACHER==========================================================//
 
+const get = async function (req, res) {
+    try {
+        let data=req.query
+
+        let findByFilter = await TimeTable.findAll({
+            where: {
+                [Op.or]: [{ className: { [Op.eq]: data.className } }, { day: { [Op.eq]: data.day } },
+                { subjectName: { [Op.eq]: data.subjectName } }, { teacherName: { [Op.eq]: data.teacherName } }],
+            },
+        })
+
+        if (!findByFilter) {
+            return res.status(404).send({ status: 1008, msg: "No such Data found" })
+        }
+
+        return res.status(200).send({ status: 1010, message: 'Timetable for the given the parameters:', data: findByFilter })
+    }
+    catch (err) {
+        console.log(err.message);
+        return res.status(422).send({ status: 1001, msg: "Something went wrong Please check back again" })
+    }
+}
+//========================================DELETE/ DELETE-A-TEACHER==========================================================//
+
 const destroy = async function (req, res) {
     try {
 
@@ -107,5 +124,6 @@ module.exports = {
     create,
     index,
     update,
+    get,
     destroy
 }

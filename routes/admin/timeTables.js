@@ -1,13 +1,14 @@
 const express = require("express")
 const timeTableRouter = express.Router()
 const validate = require("../../validators/admin/timeTable")
-const { create, index, update, destroy } = require("../../controllers/admin/timeTables")
+const { create, index, update, get, destroy } = require("../../controllers/admin/timeTables")
 const { authentication } = require("../../middleware/authentication")
 const { authorization } = require("../../middleware/authorization")
 
-timeTableRouter.post('/timetables-class', [validate.create], create);
-timeTableRouter.get('/timetables-class', index);
-timeTableRouter.put('/timetables-class/:id', [validate.update], update);
-timeTableRouter.delete('/timetables-class/:id', [validate.destroy], destroy);
+timeTableRouter.post('/timetables/class', [authentication,authorization,validate.create], create);
+timeTableRouter.get('/timetables/class', index);
+timeTableRouter.get('/timetables/byfilters', [authentication,authorization,validate.get], get);
+timeTableRouter.put('/timetables/class/:id', [authentication,authorization,validate.update], update);
+timeTableRouter.delete('/timetables/class/:id', [authentication,authorization,validate.destroy], destroy);
 
 module.exports = timeTableRouter
